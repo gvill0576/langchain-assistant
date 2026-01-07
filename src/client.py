@@ -1,10 +1,9 @@
 import boto3
 from langchain_aws import ChatBedrock
 from dotenv import load_dotenv
-import os
 
-# Load environment variables from .env file
 load_dotenv()
+
 
 def create_client(region="us-east-1"):
     """Create and return a Bedrock runtime client."""
@@ -12,6 +11,7 @@ def create_client(region="us-east-1"):
         service_name="bedrock-runtime",
         region_name=region
     )
+
 
 def create_llm(client, model_id="us.amazon.nova-lite-v1:0"):
     """Create and return a ChatBedrock LLM instance."""
