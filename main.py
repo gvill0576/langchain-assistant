@@ -136,3 +136,81 @@ def test_memory():
 if __name__ == "__main__":
     test_memory()  # Test memory first
     # test_chains()  # Uncomment to test chains too
+
+"""Main script to test all components."""
+
+from src.chains import generate_and_evaluate, research_pipeline
+from src.memory import chat_with_memory, clear_session
+from src.tools import calculator, get_time, word_counter
+
+
+def test_chains():
+    """Test the sequential chains."""
+    print("=" * 50)
+    print("TESTING CHAINS")
+    print("=" * 50)
+    
+    print("\n--- Simple Chain: Idea Generation ---")
+    try:
+        result = generate_and_evaluate("mobile app ideas for students")
+        print(f"Result: {result}")
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    print("\n--- Research Pipeline ---")
+    try:
+        result = research_pipeline("renewable energy")
+        print(f"\nResearch: {result['research'][:200]}...")
+        print(f"\nOutline: {result['outline'][:200]}...")
+        print(f"\nSummary: {result['summary'][:200]}...")
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+def test_memory():
+    """Test conversation memory."""
+    print("\n" + "=" * 50)
+    print("TESTING MEMORY")
+    print("=" * 50)
+    
+    clear_session("demo")
+    
+    print("\n--- Conversation with Memory ---")
+    response1 = chat_with_memory("Hi, my name is George and I'm learning AI", "demo")
+    print(f"User: Hi, my name is George and I'm learning AI")
+    print(f"Bot: {response1}")
+    
+    response2 = chat_with_memory("What's my name?", "demo")
+    print(f"\nUser: What's my name?")
+    print(f"Bot: {response2}")
+
+
+def test_tools():
+    """Test all custom tools."""
+    print("\n" + "=" * 50)
+    print("TESTING TOOLS")
+    print("=" * 50)
+    
+    print("\n--- Calculator Tool ---")
+    print(f"25 * 4 + 10 = {calculator('25 * 4 + 10')}")
+    print(f"100 / 4 = {calculator('100 / 4')}")
+    print(f"(50 + 30) * 2 = {calculator('(50 + 30) * 2')}")
+    print(f"Invalid input 'hello' = {calculator('hello')}")
+    
+    print("\n--- Time Tool ---")
+    print(f"Default format: {get_time('default')}")
+    print(f"Short format: {get_time('short')}")
+    print(f"Long format: {get_time('long')}")
+    print(f"Date only: {get_time('date')}")
+    
+    print("\n--- Word Counter Tool ---")
+    print(f"'hello world' = {word_counter('hello world')}")
+    print(f"'The quick brown fox' = {word_counter('The quick brown fox')}")
+    print(f"Empty string = {word_counter('')}")
+
+
+if __name__ == "__main__":
+    test_tools()    # Test tools first (no AWS needed)
+    # test_memory()   # Uncomment to test memory
+    # test_chains()   # Uncomment to test chains
+
