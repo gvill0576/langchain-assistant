@@ -3,6 +3,7 @@ from langchain_aws import ChatBedrock
 from dotenv import load_dotenv
 import os
 
+# Load environment variables from .env file
 load_dotenv()
 
 def create_client(region="us-east-1"):
