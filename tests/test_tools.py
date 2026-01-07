@@ -1,6 +1,6 @@
 """Tests for tool functionality."""
 
-import pytest
+
 from src.tools import calculator, get_time, word_counter, get_all_tools
 
 
@@ -53,7 +53,7 @@ def test_get_time_formats():
     long = get_time("long")
     date = get_time("date")
     default = get_time("default")
-    
+
     assert isinstance(short, str)
     assert isinstance(long, str)
     assert isinstance(date, str)
@@ -76,7 +76,8 @@ def test_word_counter_characters():
 def test_word_counter_empty():
     """Test word counter with empty string."""
     result = word_counter("")
-    assert "Words: 0" in result or "Words: 1" in result  # Split behavior varies
+    assert "Words: 0" in result or "Words: 1" in result
+    # Split behavior varies
     assert "Characters: 0" in result
 
 

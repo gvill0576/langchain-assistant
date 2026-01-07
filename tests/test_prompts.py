@@ -1,5 +1,9 @@
 import pytest
-from src.prompts import get_assistant_prompt, get_summarizer_prompt, get_prompt_by_name
+from src.prompts import (
+    get_assistant_prompt,
+    get_summarizer_prompt,
+    get_prompt_by_name
+)
 
 
 def test_assistant_prompt_formats():
