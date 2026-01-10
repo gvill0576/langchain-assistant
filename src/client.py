@@ -1,22 +1,27 @@
+import os
 import boto3
-from langchain_aws import ChatBedrock
 from dotenv import load_dotenv
+from langchain_aws import ChatBedrock
 
-load_dotenv()
-
-
-def create_client(region="us-east-1"):
-    """Create and return a Bedrock runtime client."""
+def create_client():
+    """Create AWS Bedrock client"""
+    load_dotenv()
+    
     return boto3.client(
         service_name="bedrock-runtime",
-        region_name=region
+        region_name="us-east-1"
     )
 
-
-def create_llm(client, model_id="us.amazon.nova-lite-v1:0"):
-    """Create and return a ChatBedrock LLM instance."""
+def create_llm(client=None):
+    """Create LLM instance"""
+    if client is None:
+        client = create_client()
+    
     return ChatBedrock(
-        model_id=model_id,
+        model_id="us.amazon.nova-lite-v1:0",
         client=client,
-        model_kwargs={"temperature": 0.7}
+        model_kwargs={
+            "max_tokens": 1500,
+            "temperature": 0.7
+        }
     )
