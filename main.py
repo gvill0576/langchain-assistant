@@ -1,216 +1,77 @@
-from src.chains import chat, summarize
+#!/usr/bin/env python3
+"""
+Manual testing script for LangGraph workflows and agents.
+Run this to see your workflows in action!
+"""
 
-def main():
-    print("Testing Multilingual Assistant")
-    print("=" * 40)
+from src.state import create_initial_state, get_state_summary
+from src.workflows import run_research_workflow
+from src.agents import run_agent
+
+def test_linear_workflow():
+    """Test the linear workflow"""
+    print("=" * 60)
+    print("TESTING LINEAR WORKFLOW")
+    print("=" * 60)
     
-    # Test English
-    response = chat("English", "What is the capital of France?")
-    print(f"English: {response}\n")
+    query = "benefits of solar energy"
+    print(f"\nQuery: {query}")
+    print("Running workflow...\n")
     
-    # Test Spanish
-    response = chat("Spanish", "What is the capital of France?")
-    print(f"Spanish: {response}\n")
+    result = run_research_workflow(query, "linear")
+    summary = get_state_summary(result)
     
-    # Test Summarizer
-    text = "LangChain is a framework for developing applications powered by language models. It enables applications that are context-aware and can reason about how to answer based on provided context."
-    summary = summarize(text, "brief")
-    print(f"Summary: {summary}")
+    print(f"\n✅ Workflow Complete!")
+    print(f"Steps executed: {summary['steps']}")
+    print(f"Quality score: {summary['quality']}")
+    print(f"\nFinal Summary:")
+    print(result['summary'][:300] + "...")
+
+def test_conditional_workflow():
+    """Test the conditional workflow"""
+    print("\n" + "=" * 60)
+    print("TESTING CONDITIONAL WORKFLOW")
+    print("=" * 60)
+    
+    # This query should trigger cost research
+    query = "solar panel installation costs"
+    print(f"\nQuery: {query}")
+    print("Expected: Should trigger cost research branch")
+    print("Running workflow...\n")
+    
+    result = run_research_workflow(query, "conditional")
+    
+    print(f"\n✅ Workflow Complete!")
+    print(f"Steps executed: {result['step_count']}")
+    print(f"\nFinal Summary:")
+    print(result['summary'][:300] + "...")
+
+def test_agent():
+    """Test the agent"""
+    print("\n" + "=" * 60)
+    print("TESTING AGENT")
+    print("=" * 60)
+    
+    query = "Research and summarize renewable energy benefits"
+    print(f"\nQuery: {query}")
+    print("Expected: Agent should use multiple tools")
+    print("Running agent...\n")
+    
+    result = run_agent(query)
+    
+    print(f"\n✅ Agent Complete!")
+    print(f"\nResult:")
+    print(result[:400] + "...")
 
 if __name__ == "__main__":
-    main()
-
-"""Main script to test all components."""
-
-from src.chains import generate_and_evaluate, research_pipeline
-from src.tools import calculator, get_time, word_counter
-
-
-def test_chains():
-    """Test the sequential chains."""
-    print("=" * 50)
-    print("TESTING CHAINS")
-    print("=" * 50)
+    print("🚀 LangGraph and Agents - Manual Testing")
+    print("=" * 60)
     
-    print("\n--- Simple Chain: Idea Generation ---")
-    try:
-        result = generate_and_evaluate("mobile app ideas for students")
-        print(f"Result: {result}")
-    except Exception as e:
-        print(f"Error: {e}")
+    # Run tests
+    test_linear_workflow()
+    test_conditional_workflow()
+    test_agent()
     
-    print("\n--- Research Pipeline ---")
-    try:
-        result = research_pipeline("renewable energy")
-        print(f"\nResearch: {result['research'][:200]}...")
-        print(f"\nOutline: {result['outline'][:200]}...")
-        print(f"\nSummary: {result['summary'][:200]}...")
-    except Exception as e:
-        print(f"Error: {e}")
-
-
-if __name__ == "__main__":
-    test_chains()
-
-"""Main script to test all components."""
-
-from src.chains import generate_and_evaluate, research_pipeline
-from src.memory import chat_with_memory, clear_session
-from src.tools import calculator, get_time, word_counter
-
-
-def test_chains():
-    """Test the sequential chains."""
-    print("=" * 50)
-    print("TESTING CHAINS")
-    print("=" * 50)
-    
-    print("\n--- Simple Chain: Idea Generation ---")
-    try:
-        result = generate_and_evaluate("mobile app ideas for students")
-        print(f"Result: {result}")
-    except Exception as e:
-        print(f"Error: {e}")
-    
-    print("\n--- Research Pipeline ---")
-    try:
-        result = research_pipeline("renewable energy")
-        print(f"\nResearch: {result['research'][:200]}...")
-        print(f"\nOutline: {result['outline'][:200]}...")
-        print(f"\nSummary: {result['summary'][:200]}...")
-    except Exception as e:
-        print(f"Error: {e}")
-
-
-def test_memory():
-    """Test conversation memory."""
-    print("\n" + "=" * 50)
-    print("TESTING MEMORY")
-    print("=" * 50)
-    
-    # Clear any old memory for this test
-    clear_session("demo")
-    
-    print("\n--- Conversation with Memory ---")
-    
-    # Message 1: Tell the bot your name
-    response1 = chat_with_memory("Hi, my name is George and I'm learning AI", "demo")
-    print(f"User: Hi, my name is George and I'm learning AI")
-    print(f"Bot: {response1}")
-    
-    # Message 2: Tell the bot about your work
-    response2 = chat_with_memory("I'm working on a chatbot project", "demo")
-    print(f"\nUser: I'm working on a chatbot project")
-    print(f"Bot: {response2}")
-    
-    # Message 3: Test if bot remembers
-    response3 = chat_with_memory("What's my name and what am I working on?", "demo")
-    print(f"\nUser: What's my name and what am I working on?")
-    print(f"Bot: {response3}")
-    
-    print("\n--- Testing Separate Sessions ---")
-    
-    # Alice's session
-    clear_session("alice")
-    alice_response = chat_with_memory("I'm Alice and I love Python", "alice")
-    print(f"\nAlice: I'm Alice and I love Python")
-    print(f"Bot to Alice: {alice_response}")
-    
-    # Bob's session
-    clear_session("bob")
-    bob_response = chat_with_memory("I'm Bob and I love JavaScript", "bob")
-    print(f"\nBob: I'm Bob and I love JavaScript")
-    print(f"Bot to Bob: {bob_response}")
-    
-    # Check Alice's memory
-    alice_check = chat_with_memory("What do I love?", "alice")
-    print(f"\nAlice: What do I love?")
-    print(f"Bot to Alice: {alice_check}")  # Should say "Python"
-    
-    # Check Bob's memory
-    bob_check = chat_with_memory("What do I love?", "bob")
-    print(f"\nBob: What do I love?")
-    print(f"Bot to Bob: {bob_check}")  # Should say "JavaScript"
-
-
-if __name__ == "__main__":
-    test_memory()  # Test memory first
-    # test_chains()  # Uncomment to test chains too
-
-"""Main script to test all components."""
-
-from src.chains import generate_and_evaluate, research_pipeline
-from src.memory import chat_with_memory, clear_session
-from src.tools import calculator, get_time, word_counter
-
-
-def test_chains():
-    """Test the sequential chains."""
-    print("=" * 50)
-    print("TESTING CHAINS")
-    print("=" * 50)
-    
-    print("\n--- Simple Chain: Idea Generation ---")
-    try:
-        result = generate_and_evaluate("mobile app ideas for students")
-        print(f"Result: {result}")
-    except Exception as e:
-        print(f"Error: {e}")
-    
-    print("\n--- Research Pipeline ---")
-    try:
-        result = research_pipeline("renewable energy")
-        print(f"\nResearch: {result['research'][:200]}...")
-        print(f"\nOutline: {result['outline'][:200]}...")
-        print(f"\nSummary: {result['summary'][:200]}...")
-    except Exception as e:
-        print(f"Error: {e}")
-
-
-def test_memory():
-    """Test conversation memory."""
-    print("\n" + "=" * 50)
-    print("TESTING MEMORY")
-    print("=" * 50)
-    
-    clear_session("demo")
-    
-    print("\n--- Conversation with Memory ---")
-    response1 = chat_with_memory("Hi, my name is George and I'm learning AI", "demo")
-    print(f"User: Hi, my name is George and I'm learning AI")
-    print(f"Bot: {response1}")
-    
-    response2 = chat_with_memory("What's my name?", "demo")
-    print(f"\nUser: What's my name?")
-    print(f"Bot: {response2}")
-
-
-def test_tools():
-    """Test all custom tools."""
-    print("\n" + "=" * 50)
-    print("TESTING TOOLS")
-    print("=" * 50)
-    
-    print("\n--- Calculator Tool ---")
-    print(f"25 * 4 + 10 = {calculator('25 * 4 + 10')}")
-    print(f"100 / 4 = {calculator('100 / 4')}")
-    print(f"(50 + 30) * 2 = {calculator('(50 + 30) * 2')}")
-    print(f"Invalid input 'hello' = {calculator('hello')}")
-    
-    print("\n--- Time Tool ---")
-    print(f"Default format: {get_time('default')}")
-    print(f"Short format: {get_time('short')}")
-    print(f"Long format: {get_time('long')}")
-    print(f"Date only: {get_time('date')}")
-    
-    print("\n--- Word Counter Tool ---")
-    print(f"'hello world' = {word_counter('hello world')}")
-    print(f"'The quick brown fox' = {word_counter('The quick brown fox')}")
-    print(f"Empty string = {word_counter('')}")
-
-
-if __name__ == "__main__":
-    test_tools()    # Test tools first (no AWS needed)
-    # test_memory()   # Uncomment to test memory
-    # test_chains()   # Uncomment to test chains
-
+    print("\n" + "=" * 60)
+    print("✅ All manual tests completed!")
+    print("=" * 60)
