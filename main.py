@@ -1,77 +1,91 @@
-#!/usr/bin/env python3
-"""
-Manual testing script for LangGraph workflows and agents.
-Run this to see your workflows in action!
-"""
+from src.tracing import create_traced_state, get_trace_summary
+from src.performance import PerformanceMonitor
+from src.errors import ErrorTracker
+from src.feedback import FeedbackCollector
 
-from src.state import create_initial_state, get_state_summary
-from src.workflows import run_research_workflow
-from src.agents import run_agent
 
-def test_linear_workflow():
-    """Test the linear workflow"""
-    print("=" * 60)
-    print("TESTING LINEAR WORKFLOW")
-    print("=" * 60)
+def test_tracing():
+    """Test tracing functionality"""
+    print("=" * 50)
+    print("TESTING TRACING")
+    print("=" * 50)
     
-    query = "benefits of solar energy"
-    print(f"\nQuery: {query}")
-    print("Running workflow...\n")
+    state = create_traced_state("What is machine learning?")
+    summary = get_trace_summary(state)
     
-    result = run_research_workflow(query, "linear")
-    summary = get_state_summary(result)
-    
-    print(f"\n✅ Workflow Complete!")
-    print(f"Steps executed: {summary['steps']}")
-    print(f"Quality score: {summary['quality']}")
-    print(f"\nFinal Summary:")
-    print(result['summary'][:300] + "...")
+    print(f"Trace ID: {summary['trace_id'][:8]}...")
+    print(f"Query: {summary['query']}")
+    print(f"Execution time: {summary['execution_time']}s")
+    print("✅ Tracing working\n")
 
-def test_conditional_workflow():
-    """Test the conditional workflow"""
-    print("\n" + "=" * 60)
-    print("TESTING CONDITIONAL WORKFLOW")
-    print("=" * 60)
-    
-    # This query should trigger cost research
-    query = "solar panel installation costs"
-    print(f"\nQuery: {query}")
-    print("Expected: Should trigger cost research branch")
-    print("Running workflow...\n")
-    
-    result = run_research_workflow(query, "conditional")
-    
-    print(f"\n✅ Workflow Complete!")
-    print(f"Steps executed: {result['step_count']}")
-    print(f"\nFinal Summary:")
-    print(result['summary'][:300] + "...")
 
-def test_agent():
-    """Test the agent"""
-    print("\n" + "=" * 60)
-    print("TESTING AGENT")
-    print("=" * 60)
+def test_performance():
+    """Test performance monitoring"""
+    print("=" * 50)
+    print("TESTING PERFORMANCE MONITOR")
+    print("=" * 50)
     
-    query = "Research and summarize renewable energy benefits"
-    print(f"\nQuery: {query}")
-    print("Expected: Agent should use multiple tools")
-    print("Running agent...\n")
+    monitor = PerformanceMonitor()
     
-    result = run_agent(query)
+    # Simulate 3 workflow runs
+    for i in range(3):
+        state = {
+            "query": f"test query {i}",
+            "execution_time": 3.0 + i,
+            "step_count": 3,
+            "token_estimate": 500,
+            "cost_estimate": 0.001,
+            "error": None,
+            "trace_metadata": {"steps": []}
+        }
+        monitor.record_run(state)
     
-    print(f"\n✅ Agent Complete!")
-    print(f"\nResult:")
-    print(result[:400] + "...")
+    monitor.print_report()
+
+
+def test_errors():
+    """Test error tracking"""
+    print("=" * 50)
+    print("TESTING ERROR TRACKER")
+    print("=" * 50)
+    
+    tracker = ErrorTracker()
+    
+    tracker.log_error("Connection timeout after 30 seconds")
+    tracker.log_error("Rate limit exceeded, try again later")
+    tracker.log_error("Token limit exceeded: 4096 max")
+    tracker.log_error("Failed to parse JSON response")
+    
+    tracker.print_report()
+
+
+def test_feedback():
+    """Test feedback collection"""
+    print("=" * 50)
+    print("TESTING FEEDBACK COLLECTOR")
+    print("=" * 50)
+    
+    collector = FeedbackCollector()
+    
+    collector.submit_feedback("trace-1", 5, "Excellent response!")
+    collector.submit_feedback("trace-2", 4, "Good but could be better")
+    collector.submit_feedback("trace-3", 3, "Average")
+    collector.submit_feedback("trace-4", 2, "Not helpful")
+    collector.submit_feedback("trace-5", 1, "Completely wrong")
+    
+    collector.print_report()
+
 
 if __name__ == "__main__":
-    print("🚀 LangGraph and Agents - Manual Testing")
-    print("=" * 60)
+    print("\n🚀 LANGSMITH MONITORING SYSTEM TEST")
+    print(f"👤 GitHub User: gvill0576")
+    print(f"☁️  AWS Profile: default\n")
     
-    # Run tests
-    test_linear_workflow()
-    test_conditional_workflow()
-    test_agent()
+    test_tracing()
+    test_performance()
+    test_errors()
+    test_feedback()
     
-    print("\n" + "=" * 60)
-    print("✅ All manual tests completed!")
-    print("=" * 60)
+    print("\n✅ All monitoring systems tested successfully!")
+
+
