@@ -1,5 +1,6 @@
 from typing import TypedDict, Optional
 
+
 class ResearchState(TypedDict):
     """State that flows through research workflows"""
     query: str                    # User's research question
@@ -10,6 +11,7 @@ class ResearchState(TypedDict):
     iteration_count: int          # Track loop iterations
     step_count: int               # Total steps executed
     error: Optional[str]          # Error tracking
+
 
 def create_initial_state(query: str) -> ResearchState:
     """Create a fresh state for a new workflow run"""
@@ -23,6 +25,7 @@ def create_initial_state(query: str) -> ResearchState:
         "step_count": 0,
         "error": None
     }
+
 
 def get_state_summary(state: ResearchState) -> dict:
     """Get a summary of the current state"""
